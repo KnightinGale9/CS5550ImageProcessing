@@ -196,7 +196,7 @@ public class GUIFrame extends JFrame {
                      transformPicLabel.setVisible(false);
 
                      Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
-                     for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i>=32;i /=2,j++) {
+                     for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i>=30;i /=2,j++) {
                          table.put(j, new JLabel(String.valueOf(i)));
                      }
                      subsampling.setMajorTickSpacing(1);
@@ -207,7 +207,7 @@ public class GUIFrame extends JFrame {
                      subsampling.setSnapToTicks(true);
                      subsampling.setValue(0);
                      Hashtable<Integer, JLabel> uptable = new Hashtable<Integer, JLabel>();
-                     for(int i = Integer.parseInt(table.get(0).getText()),j=0; i<=512;i*=2,j++) {
+                     for(int i = Integer.parseInt(table.get(0).getText()),j=0; i<=600;i*=2,j++) {
                          uptable.put(j, new JLabel(String.valueOf(i)));
                      }
                      upsampling.setMajorTickSpacing(1);
@@ -227,7 +227,7 @@ public class GUIFrame extends JFrame {
                     transformPicLabel.setVisible(false);
 
                     Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
-                    for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i>=32;i /=2,j++) {
+                    for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i>=30;i /=2,j++) {
                         table.put(j, new JLabel(String.valueOf(i)));
                     }
                     subsampling.setMajorTickSpacing(1);
@@ -239,7 +239,7 @@ public class GUIFrame extends JFrame {
                     subsampling.setValue(0);
 
                      Hashtable<Integer, JLabel> uptable = new Hashtable<Integer, JLabel>();
-                     for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i<=512;i*=2,j++) {
+                     for(int i = image.getOriginalBufferedImage().getHeight(),j=0; i<=600;i*=2,j++) {
                          uptable.put(j, new JLabel(String.valueOf(i)));
                      }
                      upsampling.setMajorTickSpacing(1);

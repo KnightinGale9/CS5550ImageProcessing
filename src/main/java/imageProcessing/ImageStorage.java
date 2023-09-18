@@ -1,9 +1,7 @@
 package imageProcessing;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.*;
 
 public class ImageStorage {
@@ -36,16 +34,6 @@ public class ImageStorage {
             originalArray[i]=transformArray[i].clone();
         }
     }
-    //ImageIO built method but the gray values are not taken correctly.
-    // Therfore using a file from github which retrives more correct gray values
-//    public void setOriginalArrayBufferedImage()
-//    {
-//        for (int i = 0; i < originalArray.length; i++) {
-//            for (int j = 0; j < originalArray[i].length; j++) {
-//                originalArray[i][j] = originalIMG.getRGB(j, i) & 0xFF;
-//            }
-//        }
-//    }
     public void setOriginalArray(int[][] arr) {
         originalArray=new int[arr.length][arr.length];
         for(int i=0;i< arr.length;i++){
@@ -55,7 +43,7 @@ public class ImageStorage {
     public void setOriginalArray(){
         try {
             GrayPixelReader pixel = new GrayPixelReader(originalImage);
-            originalArray=pixel.convertImageToArray();
+            pixel.conversionMethod(originalIMG,originalArray);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -135,7 +123,6 @@ public class ImageStorage {
             up.setupTemp(getTransformArray());
             setTransformArray(transformArray.length*2, transformArray[0].length*2);
         }
-
     }
     public void upsampling(int width,int height)
     {
