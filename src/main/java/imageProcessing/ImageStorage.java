@@ -1,8 +1,13 @@
 package imageProcessing;
 
+import imageProcessing.filterProcessing.Filter;
+import imageProcessing.filterProcessing.HighBoostFilter;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Set;
 
 public class ImageStorage {
     private File originalImage;
@@ -35,7 +40,7 @@ public class ImageStorage {
         }
     }
     public void setOriginalArray(int[][] arr) {
-        originalArray=new int[arr.length][arr.length];
+        originalArray=new int[arr.length][arr[0].length];
         for(int i=0;i< arr.length;i++){
             originalArray[i]=arr[i].clone();
         }
@@ -145,4 +150,58 @@ public class ImageStorage {
         VaryingSpacialResolution up = new VaryingSpacialResolution();
         up.bilinearInterpolation(transformArray);
     }
+
+    public void bitPlaneImage(Set<Integer> bit)
+    {
+        BitPlane bitplane = new BitPlane();
+        setTransformArray(originalArray.length,originalArray[0].length);
+        bitplane.bitPlaneCreation(originalArray,transformArray,bit);
+    }
+    public void globalHistogramEqualization()
+    {
+        HistogramEqualization HE = new HistogramEqualization();
+        setTransformArray(originalArray.length,originalArray[0].length);
+        HE.globalEqualization(originalArray,transformArray);
+    }
+    public void localHistogramEqualization(int mask)
+    {
+        HistogramEqualization HE = new HistogramEqualization();
+        setTransformArray(originalArray.length,originalArray[0].length);
+        HE.localEqualization(originalArray,transformArray,mask);
+    }
+    //
+    public void filter(String name,int... mask)
+    {
+        FilterMask filter = new FilterMask(name,mask);
+        setTransformArray(originalArray.length,originalArray[0].length);
+        filter.runFilter(originalArray,transformArray,mask[0]);
+        System.out.println("debug");
+    }
+    public void highBoostFiter(String name,int boost,int ... mask)
+    {
+        FilterMask filter = new FilterMask(name,mask);
+        setTransformArray(originalArray.length,originalArray[0].length);
+        filter.runFilter(originalArray,transformArray,mask[0]);
+        HighBoostFilter highBoost = new HighBoostFilter(boost);
+        highBoost.highBoost(originalArray,transformArray,transformArray);
+    }
+    public void pixelOverall()
+    {
+        HashMap<Integer,Integer> pixelValues = new HashMap<>();
+        for(int i =0;i< transformArray.length;i++)
+        {
+            for(int j=0;j<transformArray[i].length;j++)
+            {
+                if(!pixelValues.containsKey(transformArray[i][j]))
+                {
+                    pixelValues.put(transformArray[i][j],0);
+                }
+                pixelValues.put(transformArray[i][j],pixelValues.get(transformArray[i][j])+1);
+            }
+        }
+        System.out.println(pixelValues);
+    }
+    //sharpening filter: the mask is = to 0
+    //to do boost do a smoothing filter(box or weighted average) find the difference then multiply the difference and add the boost onto the original image
+
 }

@@ -10,7 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Set;
 
 
 public class GUIFrame extends JFrame {
@@ -34,6 +37,28 @@ public class GUIFrame extends JFrame {
     private JSlider upsampling;
     private JLabel upsamplinglabel;
     private JButton upSampleBtn;
+    private JButton globalHEButton;
+    private JButton localHEButton;
+    private JTextField localmask;
+    private ArrayList<JCheckBox> bitplaneCheckbox;
+    private JButton bitPlaneButton;
+    private JTextField boxMask;
+    private JTextField weightedAverageMask;
+    private JTextField weightedAverageBVal;
+    private JTextField medianMask;
+    private JTextField sharpeningMask;
+    private JComboBox<Integer> middleSharp;
+    private JComboBox<Integer> signSharp;
+    private JRadioButton boxRadio;
+    private JRadioButton wgavgRadio;
+    private JTextField highBoostTXT;
+    private JTextField ASelect;
+    private JButton highboostButton;
+    private JButton boxButton;
+    private JButton weightedAverageButton;
+    private JButton medianButton;
+    private JButton sharpButton;
+
 
     private JRadioButton r1;
     private JRadioButton r2;
@@ -109,11 +134,157 @@ public class GUIFrame extends JFrame {
         bitLevel.addChangeListener(change);
         grayLevelResolution.add(bitLevel);
 
+        JPanel histogramEqualization = new JPanel(null);
+        JLabel globalHistogramEqualizationLabel =new JLabel("Global Histogram Equalization:");
+        globalHistogramEqualizationLabel.setBounds(5,5,200,50);
+        histogramEqualization.add(globalHistogramEqualizationLabel);
+        globalHEButton = new JButton("Global Histogram Equalization");
+        globalHEButton.setBounds(210,5,300,50);
+        globalHEButton.addActionListener(act);
+        histogramEqualization.add(globalHEButton);
+
+
+        JLabel localHistogramEqualizationLabel =new JLabel(" Local Histogram Equalization:    MASK(ODD Numbers ONLY):");
+        localHistogramEqualizationLabel.setBounds(5,60,400,50);
+        histogramEqualization.add(localHistogramEqualizationLabel);
+
+        localmask = new JTextField("3");
+        localmask.setBounds(400,65,100,40);
+        localmask.setInputVerifier(new OddNumInputVerify());
+
+        histogramEqualization.add(localmask);
+        localHEButton = new JButton("Local Histogram Equalization");
+        localHEButton.setBounds(510,60,300,50);
+        localHEButton.addActionListener(act);
+        histogramEqualization.add(localHEButton);
+
+        JPanel boxFilterPanel = new JPanel();
+        JLabel smoothLabel = new JLabel("Box Filters(Smoothing Filter)");
+        smoothLabel.setPreferredSize(new Dimension(180,50));
+        boxFilterPanel.add(smoothLabel);
+        boxFilterPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        boxMask = new JTextField("3");
+        boxMask.setPreferredSize(new Dimension(100,40));
+//        boxMask.setInputVerifier(new OddNumInputVerify());
+        boxFilterPanel.add(boxMask);
+        boxButton = new JButton("Box Filter");
+        boxButton.setPreferredSize(new Dimension(100,50));
+        boxButton.addActionListener(act);
+        boxFilterPanel.add(boxButton);
+
+        JPanel weightedAverageFilterPanel = new JPanel();
+        JLabel weightedAverageLabel = new JLabel("Weighted Average Filters(Smoothing Filter)");
+        weightedAverageLabel.setPreferredSize(new Dimension(270,50));
+        weightedAverageFilterPanel.add(weightedAverageLabel);
+        weightedAverageFilterPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        weightedAverageMask = new JTextField("3");
+        weightedAverageMask.setPreferredSize(new Dimension(100,40));
+        weightedAverageFilterPanel.add(weightedAverageMask);
+        weightedAverageFilterPanel.add(new JLabel("  B Value(Positive num>1): "));
+        weightedAverageBVal = new JTextField("2");
+        weightedAverageBVal.setPreferredSize(new Dimension(100,40));
+        weightedAverageFilterPanel.add(weightedAverageBVal);
+//        weightedAverageMask.setInputVerifier(new OddNumInputVerify());
+        weightedAverageButton = new JButton("Weighted Average Filter");
+        weightedAverageButton.setPreferredSize(new Dimension(200,50));
+        weightedAverageButton.addActionListener(act);
+        weightedAverageFilterPanel.add(weightedAverageButton);
+
+        JPanel medianFilterPanel = new JPanel();
+        JLabel medianLabel = new JLabel("Median Filters");
+        medianLabel.setPreferredSize(new Dimension(100,50));
+        medianFilterPanel.add(medianLabel);
+        medianFilterPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        medianMask = new JTextField("3");
+        medianMask.setPreferredSize(new Dimension(100,40));
+//        boxMask.setInputVerifier(new OddNumInputVerify());
+        medianFilterPanel.add(medianMask);
+        medianButton = new JButton("Median Filter");
+        medianButton.setPreferredSize(new Dimension(100,50));
+        medianButton.addActionListener(act);
+        medianFilterPanel.add(medianButton);
+
+        JPanel sharpeningPanel = new JPanel();
+        JLabel sharpeningLabel = new JLabel("Sharpening Filters");
+        sharpeningLabel.setPreferredSize(new Dimension(130,50));
+        sharpeningPanel.add(sharpeningLabel);
+        sharpeningPanel.add(new JLabel("MASK(ODD Numbers ONLY): "));
+        sharpeningMask = new JTextField("3");
+        sharpeningMask.setPreferredSize(new Dimension(100,40));
+//        boxMask.setInputVerifier(new OddNumInputVerify());
+        sharpeningPanel.add(sharpeningMask);
+        sharpeningPanel.add(new JLabel("Adjacency: "));
+        middleSharp = new JComboBox<>(new Integer[]{4,8});
+        sharpeningPanel.add(middleSharp);
+        signSharp = new JComboBox<>(new Integer[]{-1,1});
+        sharpeningPanel.add(new JLabel("Center Mask Sign: "));
+        sharpeningPanel.add(signSharp);
+        sharpButton = new JButton("Sharpen Filter");
+        sharpButton.setPreferredSize(new Dimension(100,50));
+        sharpButton.addActionListener(act);
+        sharpeningPanel.add(sharpButton);
+
+        JPanel highBoostPanel = new JPanel();
+        JLabel highBoostLabel = new JLabel("High Boost Filters");
+        highBoostLabel.setPreferredSize(new Dimension(130,50));
+        highBoostPanel.add(highBoostLabel);
+        JLabel smoothHB = new JLabel("Smoothing Filters");
+        smoothHB.setPreferredSize(new Dimension(130,50));
+        highBoostPanel.add(smoothHB);
+        boxRadio = new JRadioButton("Box Filter",true);
+        highBoostPanel.add(boxRadio);
+        wgavgRadio = new JRadioButton("Weighted Average Filter");
+        highBoostPanel.add(wgavgRadio);
+        ButtonGroup highboostBG = new ButtonGroup();
+        highboostBG.add(boxRadio);
+        highboostBG.add(wgavgRadio);
+        highBoostPanel.add(new JLabel("MASK(ODD Numbers ONLY): "));
+        highBoostTXT = new JTextField("3");
+        highBoostTXT.setPreferredSize(new Dimension(100,40));
+//        boxMask.setInputVerifier(new OddNumInputVerify());
+        highBoostPanel.add(highBoostTXT);
+        highBoostPanel.add(new JLabel("Value for A: "));
+        ASelect = new JTextField("2");
+        ASelect.setPreferredSize(new Dimension(100,40));
+//        boxMask.setInputVerifier(new OddNumInputVerify());
+        highBoostPanel.add(ASelect);
+        highboostButton = new JButton("HighBoost Filter");
+        highboostButton.setPreferredSize(new Dimension(150,50));
+        highboostButton.addActionListener(act);
+        highBoostPanel.add(highboostButton);
+
+        JTabbedPane filters = new JTabbedPane();
+        filters.add("Box filter",boxFilterPanel);
+        filters.add("Weighted Average filter",weightedAverageFilterPanel);
+        filters.add("Median filter", medianFilterPanel);
+        filters.add("Sharpening filter", sharpeningPanel);
+        filters.add("High Boosting filter", highBoostPanel);
+
+        JPanel bitPlane = new JPanel();
+        JLabel bitPLaneLabel = new JLabel("Remove the following bitplane from the Image: ");
+        bitPLaneLabel.setPreferredSize(new Dimension(300,100));
+        bitPlane.add(bitPLaneLabel);
+        bitPlane.add(new JLabel("MSB"));
+        bitplaneCheckbox=new ArrayList<>();
+        for(int i=7;i>=0;i--)
+        {
+            bitplaneCheckbox.add(new JCheckBox(String.valueOf(i)));
+            bitPlane.add(bitplaneCheckbox.get(7-i));
+        }
+        bitPlane.add(new JLabel("LSB  "));
+        bitPlaneButton = new JButton("Remove checked Bitplane");
+        bitPlaneButton.setPreferredSize(new Dimension(200,50));
+        bitPlaneButton.addActionListener(act);
+        bitPlane.add(bitPlaneButton);
+
 
         tabbedpane = new JTabbedPane();
         tabbedpane.setBounds(25, 20, 1395, 155);
         tabbedpane.add("Spatial Resolution", spacialResolution);
         tabbedpane.add("Gray Level Resolution", grayLevelResolution);
+        tabbedpane.add("Histogram Equalization",histogramEqualization);
+        tabbedpane.add("Spatial Filters",filters);
+        tabbedpane.add("Bit Plane",bitPlane);
         this.add(tabbedpane);
 
         openFile = new JButton("<html><center>Set Original Image</center></html>");
@@ -297,11 +468,104 @@ public class GUIFrame extends JFrame {
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
                      transformPicLabel.setVisible(true);
                  }
+                 if(e.getSource()== globalHEButton)
+                 {
+                     image.globalHistogramEqualization();
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()== localHEButton)
+                 {
+                     System.out.println(localmask.getText());
+                     image.localHistogramEqualization(Integer.valueOf(localmask.getText()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==bitPlaneButton) {
+                     Set<Integer> bit = new HashSet<>();
+                     for (int i = 0; i < 8; i++) {
+                         if (bitplaneCheckbox.get(i).isSelected()) {
+                             bit.add(Integer.valueOf(bitplaneCheckbox.get(i).getText()));
+                         }
+                     }
+                     System.out.println(bit);
+                     image.bitPlaneImage(bit);
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==boxButton)
+                 {
+                     image.filter("box",Integer.valueOf(boxMask.getText()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==weightedAverageButton)
+                 {
+                     image.filter("weightedAverage",Integer.valueOf(weightedAverageMask.getText()),Integer.valueOf(weightedAverageBVal.getText()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==medianButton)
+                 {
+                     image.filter("median",Integer.valueOf(medianMask.getText()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==sharpButton)
+                 {
+                     image.filter("sharpening",Integer.valueOf(sharpeningMask.getText()),middleSharp.getItemAt(middleSharp.getSelectedIndex()),-1*signSharp.getItemAt(signSharp.getSelectedIndex()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==highboostButton)
+                 {
+                     image.highBoostFiter((boxRadio.isSelected())?"box":"weightedAverage",Integer.valueOf(ASelect.getText()),Integer.valueOf(highBoostTXT.getText()),2);
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
              } catch (HeadlessException ex) {
                  throw new RuntimeException(ex);
              }
 
          }
      }
+    private class OddNumInputVerify extends InputVerifier
+    {
+        @Override
+        public boolean verify(JComponent input)
+        {
+            String text = ((JTextField) input).getText();
+            if(text.matches("[A-Za-z].*")|| text.matches(".*[A-Za-z].*")) {
+                JOptionPane.showMessageDialog(input, "Only Odd numbers are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+            else if (Integer.parseInt(text)%2==1)
+            {
+
+                return true;
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(input, "Only Odd numbers are allowed", "Warning", JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+        }
+    }
 
 }

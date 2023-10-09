@@ -22,11 +22,15 @@ public class GrayPixelReader {
         }
 
     }
-    public void conversionMethod(BufferedImage img, int[][] imgArray) throws IOException {
+    public void conversionMethod(BufferedImage img, int[][] imgArray) {
         if (method)
         {
-            convertImageToArrayPGM(imgArray);
-            System.out.println("ppm");
+            try {
+                convertImageToArrayPGM(imgArray);
+            } catch (IOException e) {
+                convertImagetoArrayRGB(img,imgArray);
+                System.out.println(" png");
+            }
         }
         else{
             convertImagetoArrayRGB(img,imgArray);
