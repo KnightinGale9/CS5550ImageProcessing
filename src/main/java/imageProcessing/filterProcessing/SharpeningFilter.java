@@ -45,8 +45,7 @@ public class SharpeningFilter implements Filter {
             }
         }
         cal = (m[m.length/2][m.length/2]>0)?cal*-1:cal;
-        return (m[m.length/2][m.length/2]+cal>0)?m[m.length/2][m.length/2]+cal:0;
-//        return m[m.length/2][m.length/2]+-1*cal;
+        return m[m.length/2][m.length/2]+cal;
     }
 
 }

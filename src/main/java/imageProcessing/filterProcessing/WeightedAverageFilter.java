@@ -50,6 +50,7 @@ public class WeightedAverageFilter implements Filter{
                 cal+=m[i][j]*mask[i][j];
             }
         }
-        return (cal/size<=255)?cal/size:255;
+
+        return cal/size;
     }
 }

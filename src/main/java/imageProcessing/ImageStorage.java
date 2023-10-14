@@ -6,6 +6,7 @@ import imageProcessing.filterProcessing.HighBoostFilter;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -13,7 +14,6 @@ public class ImageStorage {
     private File originalImage;
     private BufferedImage originalIMG;
     private int[][] originalArray;
-    private int[][] temporary;
     private int[][] transformArray;
 
     public void setImageStorage(File path) {
@@ -104,30 +104,13 @@ public class ImageStorage {
         setTransformArray(originalArray.length,originalArray[0].length);
         GrayLevelResolution grayLevel = new GrayLevelResolution();
         grayLevel.changeBitLevel(oldLevel,newLevel,getOriginalArray(),getTransformArray());
+        linearscale();
     }
     public void subsampling(int num)
     {
         VaryingSpacialResolution sub = new VaryingSpacialResolution();
         setTransformArray((int) (originalArray.length/Math.pow(2,num)), (int) (originalArray.length/Math.pow(2,num)));
         sub.subsampling(num,getOriginalArray(),getTransformArray());
-    }
-    public void subsampling(int width, int height)
-    {
-        VaryingSpacialResolution sub = new VaryingSpacialResolution();
-        setTransformArray(width,height);
-        sub.subsampling(width,height,getOriginalArray(),getTransformArray());
-    }
-    public void upsampling(int num)
-    {
-        VaryingSpacialResolution up = new VaryingSpacialResolution();
-        setTransformArray(originalArray.length * 2, originalArray[0].length * 2);
-        up.setupTemp(originalArray);
-        for(int i=0;i<num;i++) {
-            up.upsampling(getTransformArray());
-            up.nearestNeightbor(getTransformArray());
-            up.setupTemp(getTransformArray());
-            setTransformArray(transformArray.length*2, transformArray[0].length*2);
-        }
     }
     public void upsampling(int width,int height)
     {
@@ -156,6 +139,7 @@ public class ImageStorage {
         BitPlane bitplane = new BitPlane();
         setTransformArray(originalArray.length,originalArray[0].length);
         bitplane.bitPlaneCreation(originalArray,transformArray,bit);
+        this.linearscale();
     }
     public void globalHistogramEqualization()
     {
@@ -175,7 +159,8 @@ public class ImageStorage {
         FilterMask filter = new FilterMask(name,mask);
         setTransformArray(originalArray.length,originalArray[0].length);
         filter.runFilter(originalArray,transformArray,mask[0]);
-        System.out.println("debug");
+        this.outlierScale();
+        this.pixelOverall();
     }
     public void highBoostFiter(String name,int boost,int ... mask)
     {
@@ -184,7 +169,77 @@ public class ImageStorage {
         filter.runFilter(originalArray,transformArray,mask[0]);
         HighBoostFilter highBoost = new HighBoostFilter(boost);
         highBoost.highBoost(originalArray,transformArray,transformArray);
+        this.outlierScale();
+        this.pixelOverall();
     }
+    public void linearscale()
+    {
+        HashMap<Integer,Double> scaleMap = new HashMap();
+        for(int i =0;i<transformArray.length;i++)
+        {
+            for(int j=0;j<transformArray[0].length;j++)
+            {
+                scaleMap.put(transformArray[i][j],0.0);
+            }
+        }
+        double interval = 255 / ((double) scaleMap.size()-1);
+        Integer[] sorting = scaleMap.keySet().toArray(new Integer[0]);
+        Arrays.sort(sorting);
+        System.out.println(Arrays.toString(sorting));
+        for(int i=0;i<scaleMap.size()-1;i++)
+        {
+            scaleMap.put(sorting[i], i * interval);
+
+        }
+        scaleMap.put(sorting[sorting.length-1],255.0);
+
+        System.out.println(scaleMap);
+
+        for(int i=0;i<transformArray.length;i++)
+        {
+            for(int j=0;j<transformArray[i].length;j++)
+            {
+                transformArray[i][j] = (int)Math.round(scaleMap.get(transformArray[i][j]));
+            }
+        }
+    }
+    public void outlierScale()
+    {
+        HashMap<Integer,Double> scaleMap = new HashMap();
+        for(int i =0;i<transformArray.length;i++)
+        {
+            for(int j=0;j<transformArray[0].length;j++)
+            {
+                scaleMap.put(transformArray[i][j],0.0);
+            }
+        }
+        Integer[] sorting = scaleMap.keySet().toArray(new Integer[0]);
+        Arrays.sort(sorting);
+        System.out.println(Arrays.toString(sorting));
+        for(int i=0;i<scaleMap.size();i++)
+        {
+            if(sorting[i]<0) {
+                scaleMap.put(sorting[i],  Math.abs((sorting[i]/(double)sorting[0]) * 25));
+            }
+            else if(sorting[i]>255) {
+                scaleMap.put(sorting[i],  (sorting[i]/(double)sorting[sorting.length-1]) * 25+230);
+            }
+            else {
+                scaleMap.put(sorting[i], Double.valueOf((sorting[i])*0.8+10));
+
+            }
+        }
+        System.out.println(scaleMap);
+
+        for(int i=0;i<transformArray.length;i++)
+        {
+            for(int j=0;j<transformArray[i].length;j++)
+            {
+                transformArray[i][j] = (int)Math.round(scaleMap.get(transformArray[i][j]));
+            }
+        }
+    }
+
     public void pixelOverall()
     {
         HashMap<Integer,Integer> pixelValues = new HashMap<>();
