@@ -15,7 +15,7 @@ public class BitPlane {
             for(int j=0;j< original[i].length;j++)
             {
                 binary = String.format("%8s", Integer.toBinaryString(original[i][j])).replace(' ', '0');
-                System.out.print(binary);
+//                System.out.print(binary);
                 for(int b=binary.length()-1;b>=0;b--)
                 {
                     if(bitLevel.contains(b))
@@ -28,8 +28,8 @@ public class BitPlane {
                     }
                 }
                 transform[i][j] = Integer.parseInt(bitPlane, 2);
-                System.out.println(":" + bitPlane);
-                bitPlane="";
+//                System.out.println(":" + bitPlane);
+//                bitPlane="";
             }
         }
     }

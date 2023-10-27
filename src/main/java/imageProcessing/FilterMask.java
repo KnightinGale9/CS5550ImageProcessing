@@ -6,29 +6,15 @@ import java.util.Arrays;
 
 public class FilterMask {
     private Filter filter;
-    public  FilterMask(String type,int ... var)
+    private int mask;
+    public FilterMask(Filter type)
     {
-        if(type.equals("box"))
-        {
-            filter = new BoxFilter(var[0]);
-        }
-        else if(type.equals("weightedAverage"))
-        {
-            filter = new WeightedAverageFilter(var[0],var[1]);
-        }
-        else if(type.equals("median"))
-        {
-            filter = new MedianFilter(var[0]);
-        }
-        else if(type.equals("sharpening"))
-        {
-            filter = new SharpeningFilter(var[0],var[1],var[2]);
-        }
-        System.out.println(type+ ":"+Arrays.toString(var));
+        this.filter=type;
+        this.mask=filter.getMaskSize();
     }
     public int[][] padding(int[][] original, int pad)
     {
-        int[][] padImage = new int[original.length+(2*pad)][original.length+(2*pad)];
+        int[][] padImage = new int[original.length+(2*pad)][original[0].length+(2*pad)];
         for(int i =0;i< original.length;i++)
         {
             System.arraycopy(original[i],0,padImage[i+pad],pad,original[i].length);
@@ -48,7 +34,7 @@ public class FilterMask {
         System.out.println(padImage.toString());
         return padImage;
     }
-    public void runFilter(int[][] original, int[][]transform,int mask)
+    public void runFilter(int[][] original, int[][]transform)
     {
         int[][] localMask = new int[mask][mask];
         int[][] temp = padding(original, mask/2);

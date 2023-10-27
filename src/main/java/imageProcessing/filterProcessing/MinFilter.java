@@ -2,10 +2,10 @@ package imageProcessing.filterProcessing;
 
 import java.util.Arrays;
 
-public class MedianFilter implements Filter {
+public class MinFilter implements Filter {
     private int[] mask;
     private int maskSize;
-    public MedianFilter(int m){
+    public MinFilter(int m){
         mask = new int[m*m];
         maskSize=m;
     }
@@ -14,12 +14,10 @@ public class MedianFilter implements Filter {
     public int[][] getMask() {
         return new int[0][0];
     }
-
     @Override
     public int getMaskSize() {
         return maskSize;
     }
-
     @Override
     public int getPixel(int i, int j) {
         return 0;
@@ -28,12 +26,12 @@ public class MedianFilter implements Filter {
     public int calculate(int[][] m){
         for(int i=0;i<m.length;i++)
         {
-            for(int j =0;j<m.length;j++)
+            for(int j =0;j<m[0].length;j++)
             {
                 mask[i*m.length+j]=m[i][j];
             }
         }
         Arrays.sort(mask);
-        return mask[mask.length/2];
+        return mask[0];
     }
 }

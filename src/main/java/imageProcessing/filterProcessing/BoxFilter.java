@@ -2,10 +2,10 @@ package imageProcessing.filterProcessing;
 
 public class BoxFilter implements Filter{
     private int[][] mask;
-    private int size;
+    private int maskSize;
     public BoxFilter(int m){
         mask = new int[m][m];
-        size = m*m;
+        maskSize=m;
         for(int i=0;i<mask.length;i++)
         {
             for(int j=0;j<mask.length;j++)
@@ -18,6 +18,10 @@ public class BoxFilter implements Filter{
     @Override
     public int[][] getMask() {
         return mask;
+    }
+    @Override
+    public int getMaskSize() {
+        return maskSize;
     }
     @Override
     public int getPixel(int i, int j) {
@@ -33,6 +37,6 @@ public class BoxFilter implements Filter{
                 cal+=m[i][j]*mask[i][j];
             }
         }
-        return cal/size;
+        return cal/(maskSize*maskSize);
     }
 }

@@ -2,6 +2,7 @@ package imageProcessing;
 
 import imageProcessing.filterProcessing.Filter;
 import imageProcessing.filterProcessing.HighBoostFilter;
+import imageProcessing.filterProcessing.SharpeningFilter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -34,7 +35,7 @@ public class ImageStorage {
     }
     public void setTransformArrayAsOriginalArray()
     {
-        originalArray=new int[transformArray.length][transformArray.length];
+        originalArray=new int[transformArray.length][transformArray[0].length];
         for(int i=0;i< transformArray.length;i++){
             originalArray[i]=transformArray[i].clone();
         }
@@ -49,6 +50,7 @@ public class ImageStorage {
         try {
             GrayPixelReader pixel = new GrayPixelReader(originalImage);
             pixel.conversionMethod(originalIMG,originalArray);
+            System.out.println("debug");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -58,9 +60,9 @@ public class ImageStorage {
     {
         return originalIMG;
     }
-    public void setTransformArray(int width, int height)
+    public void setTransformArray(int height, int width)
     {
-        transformArray = new int[width][height];
+        transformArray = new int[height][width];
     }
     public int[][] getTransformArray()
     {
@@ -84,19 +86,18 @@ public class ImageStorage {
         }
     }
     public BufferedImage getImageFromArray() {
-        int width=getTransformArray().length;
-        int height=getTransformArray()[0].length;
-        int[][] pixelArray=getTransformArray();
+        int width=transformArray.length;
+        int height=transformArray[0].length;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         // Get the array of integers that represents the image
         byte[] pixels = new byte[width * height];
-        for (int i = 0; i < pixelArray.length; i++) {
-            for(int j=0;j<pixelArray[0].length;j++){
-                pixels[i*pixelArray.length+j] = (byte)pixelArray[i][j];
+        for (int i = 0; i < transformArray.length; i++) {
+            for(int j=0;j<transformArray[0].length;j++){
+                pixels[j*transformArray.length+i] = (byte)transformArray[i][j];
             }
         }
         // Set the pixels of the image
-        image.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), pixels);
+        image.getRaster().setDataElements(0, 0, width, height, pixels);
         return image;
     }
     public void changeBitLevel(int oldLevel, int newLevel)
@@ -109,7 +110,7 @@ public class ImageStorage {
     public void subsampling(int num)
     {
         VaryingSpacialResolution sub = new VaryingSpacialResolution();
-        setTransformArray((int) (originalArray.length/Math.pow(2,num)), (int) (originalArray.length/Math.pow(2,num)));
+        setTransformArray((int) (originalArray.length/Math.pow(2,num)), (int) (originalArray[0].length/Math.pow(2,num)));
         sub.subsampling(num,getOriginalArray(),getTransformArray());
     }
     public void upsampling(int width,int height)
@@ -154,19 +155,26 @@ public class ImageStorage {
         HE.localEqualization(originalArray,transformArray,mask);
     }
     //
-    public void filter(String name,int... mask)
+    public void filter(Filter type)
     {
-        FilterMask filter = new FilterMask(name,mask);
+        FilterMask filter = new FilterMask(type);
         setTransformArray(originalArray.length,originalArray[0].length);
-        filter.runFilter(originalArray,transformArray,mask[0]);
+        filter.runFilter(originalArray,transformArray);
+        this.pixelOverall();
+    }
+    public void sharpeningFilter(int m,int adj,int sign)
+    {
+        FilterMask filter = new FilterMask(new SharpeningFilter(m,adj,sign));
+        setTransformArray(originalArray.length,originalArray[0].length);
+        filter.runFilter(originalArray,transformArray);
         this.outlierScale();
         this.pixelOverall();
     }
-    public void highBoostFiter(String name,int boost,int ... mask)
+    public void highBoostFiter(Filter type,int boost)
     {
-        FilterMask filter = new FilterMask(name,mask);
+        FilterMask filter = new FilterMask(type);
         setTransformArray(originalArray.length,originalArray[0].length);
-        filter.runFilter(originalArray,transformArray,mask[0]);
+        filter.runFilter(originalArray,transformArray);
         HighBoostFilter highBoost = new HighBoostFilter(boost);
         highBoost.highBoost(originalArray,transformArray,transformArray);
         this.outlierScale();
@@ -256,7 +264,4 @@ public class ImageStorage {
         }
         System.out.println(pixelValues);
     }
-    //sharpening filter: the mask is = to 0
-    //to do boost do a smoothing filter(box or weighted average) find the difference then multiply the difference and add the boost onto the original image
-
 }

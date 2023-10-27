@@ -2,11 +2,13 @@ package imageProcessing.filterProcessing;
 
 import java.util.Arrays;
 
-public class MedianFilter implements Filter {
+public class AlphaTrimmedMeanFIlter implements Filter {
     private int[] mask;
     private int maskSize;
-    public MedianFilter(int m){
+    private int dValue;
+    public AlphaTrimmedMeanFIlter(int m,int d){
         mask = new int[m*m];
+        dValue=d;
         maskSize=m;
     }
 
@@ -34,6 +36,11 @@ public class MedianFilter implements Filter {
             }
         }
         Arrays.sort(mask);
-        return mask[mask.length/2];
+        int sum=0;
+        for(int i=dValue/2;i<mask.length-dValue;i++)
+        {
+            sum +=mask[i];
+        }
+        return sum/(mask.length-dValue);
     }
 }

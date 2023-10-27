@@ -6,9 +6,11 @@ import java.util.Arrays;
 //https://www.researchgate.net/figure/Discrete-approximation-of-the-Gaussian-kernels-3x3-5x5-7x7_fig2_325768087
 public class WeightedAverageFilter implements Filter{
     private int[][] mask;
+    private int maskSize;
     private int size;
     public WeightedAverageFilter(int m,int b){
         mask = new int[m][m];
+        maskSize=m;
         size=0;
         for(int i=0;i<m/2+1;i++)
         {
@@ -35,6 +37,10 @@ public class WeightedAverageFilter implements Filter{
     @Override
     public int[][] getMask() {
         return mask;
+    }
+    @Override
+    public int getMaskSize() {
+        return maskSize;
     }
     @Override
     public int getPixel(int i, int j) {

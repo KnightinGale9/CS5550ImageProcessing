@@ -16,7 +16,12 @@ public class GrayPixelReader {
             image = ImageIO.read(originalImage);
             ImageIO.write(image, "pnm", new File("src/main/image.pgm"));
             stream = new BufferedInputStream(new FileInputStream("src/main/image.pgm"));
-            method = true;
+            if (!next(stream).equals("P5"))
+                method = false;
+            else
+            {
+                method = true;
+            }
         } catch (IOException ex) {
             method = false;
         }
@@ -40,10 +45,8 @@ public class GrayPixelReader {
     }
     public void convertImagetoArrayRGB(BufferedImage img,int[][] imgArray)
     {
-        int width = img.getWidth();
-        int height = img.getHeight();
-        for(int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for(int i = 0; i < imgArray.length; i++) {
+            for (int j = 0; j < imgArray[0].length; j++) {
                 int p = img.getRGB(i, j);
 
                 int r = (p >> 16) & 0xff;
@@ -51,7 +54,7 @@ public class GrayPixelReader {
                 int b = p & 0xff;
 
                 //calculate average
-                imgArray[j][i] = (r + g + b) / 3;
+                imgArray[i][j] = (r + g + b) / 3;
 
             }
         }
@@ -59,21 +62,21 @@ public class GrayPixelReader {
     // Convert the JPG image to a PGM image
     public void convertImageToArrayPGM(int[][] imgarray) throws IOException {
         try {
-            if (!next(stream).equals("P5"))
-                throw new IOException("File " + "image.pgm" + " is not a binary PGM image.");
+//            if (!next(stream).equals("P5"))
+//                throw new IOException("File " + "image.pgm" + " is not a binary PGM image.");
             final int col = Integer.parseInt(next(stream));
             final int row = Integer.parseInt(next(stream));
             final int max = Integer.parseInt(next(stream));
             if (max < 0 || max > 255)
                 throw new IOException("The image's maximum gray value must be in range [0, " + 255 + "].");
-            for (int i = 0; i < row; ++i) {
-                for (int j = 0; j < col; ++j) {
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < col; j++) {
                     final int p = stream.read();
                     if (p == -1)
                         throw new IOException("Reached end-of-file prematurely.");
                     else if (p < 0 || p > max)
                         throw new IOException("Pixel value " + p + " outside of range [0, " + max + "].");
-                    imgarray[i][j] = p;
+                    imgarray[j][i] = p;
                 }
             }
         } catch (IOException e) {

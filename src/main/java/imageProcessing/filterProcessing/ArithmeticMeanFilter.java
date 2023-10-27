@@ -2,11 +2,9 @@ package imageProcessing.filterProcessing;
 
 import java.util.Arrays;
 
-public class MedianFilter implements Filter {
-    private int[] mask;
+public class ArithmeticMeanFilter implements Filter {
     private int maskSize;
-    public MedianFilter(int m){
-        mask = new int[m*m];
+    public ArithmeticMeanFilter(int m){
         maskSize=m;
     }
 
@@ -26,14 +24,14 @@ public class MedianFilter implements Filter {
     }
     @Override
     public int calculate(int[][] m){
+        int sum=0;
         for(int i=0;i<m.length;i++)
         {
-            for(int j =0;j<m.length;j++)
+            for(int j =0;j<m[0].length;j++)
             {
-                mask[i*m.length+j]=m[i][j];
+                sum+=m[i][j];
             }
         }
-        Arrays.sort(mask);
-        return mask[mask.length/2];
+        return sum/(maskSize*maskSize);
     }
 }

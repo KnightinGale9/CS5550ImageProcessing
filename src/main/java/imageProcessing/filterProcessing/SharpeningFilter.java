@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 public class SharpeningFilter implements Filter {
     private int[][] mask;
+    private int maskSize;
     public SharpeningFilter(int m, int adj, int sign){
         mask = new int[m][m];
+        maskSize=m;
         if(adj==4)
         {
             Arrays.fill(mask[m/2],sign);
@@ -29,6 +31,10 @@ public class SharpeningFilter implements Filter {
     @Override
     public int[][] getMask() {
         return mask;
+    }
+    @Override
+    public int getMaskSize() {
+        return maskSize;
     }
     @Override
     public int getPixel(int i, int j) {

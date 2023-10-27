@@ -1,6 +1,7 @@
 package GUI;
 
 import imageProcessing.ImageStorage;
+import imageProcessing.filterProcessing.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 public class GUIFrame extends JFrame {
     private static GUIFrame instance;
+
     private ImageStorage image = new ImageStorage();
     private JPanel originalImage;
     private JLabel originalLabel;
@@ -58,7 +60,25 @@ public class GUIFrame extends JFrame {
     private JButton weightedAverageButton;
     private JButton medianButton;
     private JButton sharpButton;
+    private JTextField alphaTrimmedD;
+    private JButton alphaTrimmedMeanButton;
+    private JTextField alphaTrimmedMeanMask;
+    private JButton contraharmonicMeanButton;
+    private JTextField contraharmonicQ;
+    private JTextField contraharmonicMeanMask;
+    private JButton harmonicMeanButton;
+    private JTextField harmonicMeanMask;
+    private JButton geometricMeanButton;
+    private JTextField geometricMeanMask;
+    private JButton arithmeticMeanButton;
+    private JTextField arithmeticMeanMask;
 
+    private JButton midpointButton;
+    private JTextField midpointMask;
+    private JButton maxButton;
+    private JTextField maxMask;
+    private JButton minButton;
+    private JTextField minMask;
 
     private JRadioButton r1;
     private JRadioButton r2;
@@ -241,7 +261,7 @@ public class GUIFrame extends JFrame {
         highBoostPanel.add(new JLabel("MASK(ODD Numbers ONLY): "));
         highBoostTXT = new JTextField("3");
         highBoostTXT.setPreferredSize(new Dimension(100,40));
-//        boxMask.setInputVerifier(new OddNumInputVerify());
+        highBoostTXT.setInputVerifier(new OddNumInputVerify());
         highBoostPanel.add(highBoostTXT);
         highBoostPanel.add(new JLabel("Value for A: "));
         ASelect = new JTextField("2");
@@ -253,12 +273,145 @@ public class GUIFrame extends JFrame {
         highboostButton.addActionListener(act);
         highBoostPanel.add(highboostButton);
 
+        JPanel minPanel = new JPanel();
+        JLabel minLabel = new JLabel("Min Filters");
+        minLabel.setPreferredSize(new Dimension(100,50));
+        minPanel.add(minLabel);
+        minPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        minMask = new JTextField("3");
+        minMask.setPreferredSize(new Dimension(100,40));
+        minMask.setInputVerifier(new OddNumInputVerify());
+        minPanel.add(minMask);
+        minButton = new JButton("Min Filter");
+        minButton.setPreferredSize(new Dimension(100,50));
+        minButton.addActionListener(act);
+        minPanel.add(minButton);
+
+        JPanel maxPanel = new JPanel();
+        JLabel maxLabel = new JLabel("Max Filters");
+        maxLabel.setPreferredSize(new Dimension(100,50));
+        maxPanel.add(maxLabel);
+        maxPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        maxMask = new JTextField("3");
+        maxMask.setPreferredSize(new Dimension(100,40));
+        maxMask.setInputVerifier(new OddNumInputVerify());
+        maxPanel.add(maxMask);
+        maxButton = new JButton("Max Filter");
+        maxButton.setPreferredSize(new Dimension(100,50));
+        maxButton.addActionListener(act);
+        maxPanel.add(maxButton);
+
+        JPanel midpointPanel = new JPanel();
+        JLabel midpointLabel = new JLabel("Midpoint Filters");
+        midpointLabel.setPreferredSize(new Dimension(100,50));
+        midpointPanel.add(midpointLabel);
+        midpointPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        midpointMask = new JTextField("3");
+        midpointMask.setPreferredSize(new Dimension(100,40));
+        midpointMask.setInputVerifier(new OddNumInputVerify());
+        midpointPanel.add(midpointMask);
+        midpointButton = new JButton("Midpoint Filter");
+        midpointButton.setPreferredSize(new Dimension(100,50));
+        midpointButton.addActionListener(act);
+        midpointPanel.add(midpointButton);
+
+        JPanel arithmeticMeanPanel = new JPanel();
+        JLabel arithmeticMeanLabel = new JLabel("Arithmetic Mean Filters");
+        arithmeticMeanLabel.setPreferredSize(new Dimension(100,50));
+        arithmeticMeanPanel.add(arithmeticMeanLabel);
+        arithmeticMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        arithmeticMeanMask = new JTextField("3");
+        arithmeticMeanMask.setPreferredSize(new Dimension(100,40));
+        arithmeticMeanMask.setInputVerifier(new OddNumInputVerify());
+        arithmeticMeanPanel.add(arithmeticMeanMask);
+        arithmeticMeanButton = new JButton("Arithmetic Mean Filter");
+        arithmeticMeanButton.setPreferredSize(new Dimension(100,50));
+        arithmeticMeanButton.addActionListener(act);
+        arithmeticMeanPanel.add(arithmeticMeanButton);
+
+        JPanel geometricMeanPanel = new JPanel();
+        JLabel geometricMeanLabel = new JLabel("Geometric Mean Filters");
+        geometricMeanLabel.setPreferredSize(new Dimension(100,50));
+        geometricMeanPanel.add(geometricMeanLabel);
+        geometricMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        geometricMeanMask = new JTextField("3");
+        geometricMeanMask.setPreferredSize(new Dimension(100,40));
+        geometricMeanMask.setInputVerifier(new OddNumInputVerify());
+        geometricMeanPanel.add(geometricMeanMask);
+        geometricMeanButton = new JButton("Geometric Mean Filter");
+        geometricMeanButton.setPreferredSize(new Dimension(100,50));
+        geometricMeanButton.addActionListener(act);
+        geometricMeanPanel.add(geometricMeanButton);
+
+        JPanel harmonicMeanPanel = new JPanel();
+        JLabel harmonicMeanLabel = new JLabel("Harmonic Mean Filters");
+        harmonicMeanLabel.setPreferredSize(new Dimension(100,50));
+        harmonicMeanPanel.add(harmonicMeanLabel);
+        harmonicMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        harmonicMeanMask = new JTextField("3");
+        harmonicMeanMask.setPreferredSize(new Dimension(100,40));
+        harmonicMeanMask.setInputVerifier(new OddNumInputVerify());
+        harmonicMeanPanel.add(harmonicMeanMask);
+        harmonicMeanButton = new JButton("Harmonic Mean Filter");
+        harmonicMeanButton.setPreferredSize(new Dimension(100,50));
+        harmonicMeanButton.addActionListener(act);
+        harmonicMeanPanel.add(harmonicMeanButton);
+
+        JPanel contraharmonicMeanPanel = new JPanel();
+        JLabel contraharmonicMeanLabel = new JLabel("Contra Harmonic Mean Filters");
+        contraharmonicMeanLabel.setPreferredSize(new Dimension(100,50));
+        contraharmonicMeanPanel.add(contraharmonicMeanLabel);
+        contraharmonicMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        contraharmonicMeanMask = new JTextField("3");
+        contraharmonicMeanMask.setPreferredSize(new Dimension(100,40));
+        contraharmonicMeanMask.setInputVerifier(new OddNumInputVerify());
+        contraharmonicMeanPanel.add(contraharmonicMeanMask);
+        contraharmonicMeanPanel.add(new JLabel(" Q value: "));
+        contraharmonicQ = new JTextField("1");
+        contraharmonicQ.setPreferredSize(new Dimension(100,40));
+        contraharmonicMeanPanel.add(contraharmonicQ);
+        contraharmonicMeanButton = new JButton("Contra Harmonic Mean Filter");
+        contraharmonicMeanButton.setPreferredSize(new Dimension(100,50));
+        contraharmonicMeanButton.addActionListener(act);
+        contraharmonicMeanPanel.add(contraharmonicMeanButton);
+
+        JPanel alphaTrimmedMeanPanel = new JPanel();
+        JLabel alphaTrimmedMeanLabel = new JLabel("Alpha Trimmed Mean Filters");
+        alphaTrimmedMeanLabel.setPreferredSize(new Dimension(100,50));
+        alphaTrimmedMeanPanel.add(alphaTrimmedMeanLabel);
+        alphaTrimmedMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        alphaTrimmedMeanMask = new JTextField("3");
+        alphaTrimmedMeanMask.setPreferredSize(new Dimension(100,40));
+        alphaTrimmedMeanMask.setInputVerifier(new OddNumInputVerify());
+        alphaTrimmedMeanPanel.add(alphaTrimmedMeanMask);
+        alphaTrimmedMeanPanel.add(new JLabel(" D value: "));
+        alphaTrimmedD = new JTextField("2");
+        alphaTrimmedD.setPreferredSize(new Dimension(100,40));
+        alphaTrimmedMeanPanel.add(alphaTrimmedD);
+        alphaTrimmedMeanButton = new JButton("Alpha Trimmed Mean Filter");
+        alphaTrimmedMeanButton.setPreferredSize(new Dimension(100,50));
+        alphaTrimmedMeanButton.addActionListener(act);
+        alphaTrimmedMeanPanel.add(alphaTrimmedMeanButton);
+
         JTabbedPane filters = new JTabbedPane();
         filters.add("Box filter",boxFilterPanel);
         filters.add("Weighted Average filter",weightedAverageFilterPanel);
         filters.add("Median filter", medianFilterPanel);
         filters.add("Sharpening filter", sharpeningPanel);
         filters.add("High Boosting filter", highBoostPanel);
+        JTabbedPane imageRestorefilters = new JTabbedPane();
+//        filters.add("Add Noise",noisePanel);
+        imageRestorefilters.add("Min filter",minPanel);
+        imageRestorefilters.add("Midpoint filter",midpointPanel);
+        imageRestorefilters.add("Max filter",maxPanel);
+        imageRestorefilters.add("Arithmetic mean filter",arithmeticMeanPanel);
+        imageRestorefilters.add("Geometric mean filter",geometricMeanPanel);
+        imageRestorefilters.add("Harmonic mean filter",harmonicMeanPanel);
+        imageRestorefilters.add("Contraharmonic mean filter",contraharmonicMeanPanel);
+        imageRestorefilters.add("Alpha-trimmed mean filter",alphaTrimmedMeanPanel);
+
+
+
 
         JPanel bitPlane = new JPanel();
         JLabel bitPLaneLabel = new JLabel("Remove the following bitplane from the Image: ");
@@ -284,8 +437,11 @@ public class GUIFrame extends JFrame {
         tabbedpane.add("Gray Level Resolution", grayLevelResolution);
         tabbedpane.add("Histogram Equalization",histogramEqualization);
         tabbedpane.add("Spatial Filters",filters);
+        tabbedpane.add("Image Restoration Filters",imageRestorefilters);
         tabbedpane.add("Bit Plane",bitPlane);
         this.add(tabbedpane);
+
+
 
         openFile = new JButton("<html><center>Set Original Image</center></html>");
         openFile.setBounds(20, 200, 100, 100);
@@ -501,7 +657,7 @@ public class GUIFrame extends JFrame {
                  }
                  if(e.getSource()==boxButton)
                  {
-                     image.filter("box",Integer.valueOf(boxMask.getText()));
+                     image.filter(new BoxFilter(Integer.valueOf(boxMask.getText())));
                      BufferedImage temp = image.getImageFromArray();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
@@ -509,7 +665,7 @@ public class GUIFrame extends JFrame {
                  }
                  if(e.getSource()==weightedAverageButton)
                  {
-                     image.filter("weightedAverage",Integer.valueOf(weightedAverageMask.getText()),Integer.valueOf(weightedAverageBVal.getText()));
+                     image.filter(new WeightedAverageFilter(Integer.valueOf(weightedAverageMask.getText()),Integer.valueOf(weightedAverageBVal.getText())));
                      BufferedImage temp = image.getImageFromArray();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
@@ -517,7 +673,7 @@ public class GUIFrame extends JFrame {
                  }
                  if(e.getSource()==medianButton)
                  {
-                     image.filter("median",Integer.valueOf(medianMask.getText()));
+                     image.filter(new MedianFilter(Integer.valueOf(medianMask.getText())));
                      BufferedImage temp = image.getImageFromArray();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
@@ -525,7 +681,7 @@ public class GUIFrame extends JFrame {
                  }
                  if(e.getSource()==sharpButton)
                  {
-                     image.filter("sharpening",Integer.valueOf(sharpeningMask.getText()),middleSharp.getItemAt(middleSharp.getSelectedIndex()),-1*signSharp.getItemAt(signSharp.getSelectedIndex()));
+                     image.sharpeningFilter(Integer.valueOf(sharpeningMask.getText()),middleSharp.getItemAt(middleSharp.getSelectedIndex()),-1*signSharp.getItemAt(signSharp.getSelectedIndex()));
                      BufferedImage temp = image.getImageFromArray();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
@@ -533,7 +689,68 @@ public class GUIFrame extends JFrame {
                  }
                  if(e.getSource()==highboostButton)
                  {
-                     image.highBoostFiter((boxRadio.isSelected())?"box":"weightedAverage",Integer.valueOf(ASelect.getText()),Integer.valueOf(highBoostTXT.getText()),2);
+                     image.highBoostFiter((boxRadio.isSelected())?new BoxFilter(Integer.valueOf(highBoostTXT.getText())) : new WeightedAverageFilter(Integer.valueOf(highBoostTXT.getText()),2),Integer.valueOf(ASelect.getText()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==minButton)
+                 {
+                     image.filter(new MinFilter(Integer.valueOf(minMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==midpointButton)
+                 {
+                     image.filter(new MidpointFilter(Integer.valueOf(midpointMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==maxButton)
+                 {
+                     image.filter(new MaxFilter(Integer.valueOf(maxMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }if(e.getSource()==arithmeticMeanButton)
+                 {
+                     image.filter(new ArithmeticMeanFilter(Integer.valueOf(arithmeticMeanMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }if(e.getSource()==geometricMeanButton)
+                 {
+                     image.filter(new GeometicMeanFilter(Integer.valueOf(geometricMeanMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==harmonicMeanButton)
+                 {
+                     image.filter(new HarmonicMeanFilter(Integer.valueOf(harmonicMeanMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==contraharmonicMeanButton)
+                 {
+                     image.filter(new CountraHarmonicMeanFilter(Integer.valueOf(contraharmonicQ.getText()),Integer.valueOf(contraharmonicMeanMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }if(e.getSource()==alphaTrimmedMeanButton)
+                 {
+                     image.filter(new AlphaTrimmedMeanFIlter(Integer.valueOf(alphaTrimmedMeanMask.getText()),Integer.valueOf(alphaTrimmedD.getText())));
                      BufferedImage temp = image.getImageFromArray();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());

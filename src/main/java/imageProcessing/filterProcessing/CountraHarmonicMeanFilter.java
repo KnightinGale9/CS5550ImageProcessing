@@ -1,12 +1,10 @@
 package imageProcessing.filterProcessing;
 
-import java.util.Arrays;
-
-public class MedianFilter implements Filter {
-    private int[] mask;
+public class CountraHarmonicMeanFilter implements Filter {
+    private int qValue;
     private int maskSize;
-    public MedianFilter(int m){
-        mask = new int[m*m];
+    public CountraHarmonicMeanFilter(int q,int m){
+        qValue = q;
         maskSize=m;
     }
 
@@ -14,26 +12,28 @@ public class MedianFilter implements Filter {
     public int[][] getMask() {
         return new int[0][0];
     }
-
     @Override
     public int getMaskSize() {
         return maskSize;
     }
-
     @Override
     public int getPixel(int i, int j) {
         return 0;
     }
     @Override
     public int calculate(int[][] m){
+        double top=0.0;
+        double bot=0.0;
         for(int i=0;i<m.length;i++)
         {
-            for(int j =0;j<m.length;j++)
+            for(int j =0;j<m[0].length;j++)
             {
-                mask[i*m.length+j]=m[i][j];
+                top += Math.pow(m[i][j], qValue + 1);
+                bot += Math.pow(m[i][j], qValue);
+
             }
         }
-        Arrays.sort(mask);
-        return mask[mask.length/2];
+
+        return (int) (top/bot);
     }
 }
