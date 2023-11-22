@@ -80,6 +80,16 @@ public class GUIFrame extends JFrame {
     private JButton minButton;
     private JTextField minMask;
 
+    private JTextField DLBPMask;
+    private JButton DLBPButton;
+    private JTextField IDLBPMask;
+    private JComboBox<String> IDBPDropDown;
+    private JButton IDLBPButton;
+
+
+    private JTextField sobelMask;
+    private JButton sobelButton;
+
     private JRadioButton r1;
     private JRadioButton r2;
     private JRadioButton r3;
@@ -430,6 +440,55 @@ public class GUIFrame extends JFrame {
         bitPlaneButton.addActionListener(act);
         bitPlane.add(bitPlaneButton);
 
+        JPanel sobel = new JPanel();
+        JLabel sobelLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
+        sobelLabel.setPreferredSize(new Dimension(100,50));
+        sobel.add(sobelLabel);
+        sobel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+//        sobelMask = new JTextField("3");
+//        sobelMask.setPreferredSize(new Dimension(100,40));
+//        sobelMask.setInputVerifier(new OddNumInputVerify());
+//        sobel.add(sobelMask);
+        sobelButton = new JButton("DepthLocalBinaryPattern");
+        sobelButton.setPreferredSize(new Dimension(100,50));
+        sobelButton.addActionListener(act);
+        sobel.add(sobelButton);
+
+        JPanel DLBP = new JPanel();
+        JLabel DLBPLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
+        DLBPLabel.setPreferredSize(new Dimension(100,50));
+        DLBP.add(DLBPLabel);
+        DLBP.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        DLBPMask = new JTextField("3");
+        DLBPMask.setPreferredSize(new Dimension(100,40));
+        DLBPMask.setInputVerifier(new OddNumInputVerify());
+        DLBP.add(DLBPMask);
+        DLBPButton = new JButton("DepthLocalBinaryPattern");
+        DLBPButton.setPreferredSize(new Dimension(100,50));
+        DLBPButton.addActionListener(act);
+        DLBP.add(DLBPButton);
+
+        JPanel IDLBP = new JPanel();
+        JLabel IDLBPLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
+        IDLBPLabel.setPreferredSize(new Dimension(100,50));
+        IDLBP.add(DLBPLabel);
+        IDLBP.add(new JLabel("  MASK(ODD Numbers ONLY): "));
+        IDLBPMask = new JTextField("3");
+        IDLBPMask.setPreferredSize(new Dimension(100,40));
+        IDLBPMask.setInputVerifier(new OddNumInputVerify());
+        IDLBP.add(IDLBPMask);
+        IDBPDropDown = new JComboBox<>(new String[]{"<","=","<="});
+        IDLBP.add(IDBPDropDown);
+        IDLBPButton = new JButton("DepthLocalBinaryPattern");
+        IDLBPButton.setPreferredSize(new Dimension(100,50));
+        IDLBPButton.addActionListener(act);
+        IDLBP.add(IDLBPButton);
+
+        JTabbedPane edgeDetectionTab = new JTabbedPane();
+        edgeDetectionTab.add("Sobel",sobel);
+        edgeDetectionTab.add("DepthLocalBinaryPattern",DLBP);
+        edgeDetectionTab.add("ImprovedDepthLocalBinaryPattern",IDLBP);
+
 
         tabbedpane = new JTabbedPane();
         tabbedpane.setBounds(25, 20, 1395, 155);
@@ -439,6 +498,7 @@ public class GUIFrame extends JFrame {
         tabbedpane.add("Spatial Filters",filters);
         tabbedpane.add("Image Restoration Filters",imageRestorefilters);
         tabbedpane.add("Bit Plane",bitPlane);
+        tabbedpane.add("Edge Detection",edgeDetectionTab);
         this.add(tabbedpane);
 
 
@@ -594,7 +654,7 @@ public class GUIFrame extends JFrame {
                      System.out.println("value of Slider is =" + upsampling.getValue());
                      for(int i=1;i<=upsampling.getValue();i++) {
                          System.out.printf("%d,%d\n", image.getOriginalBufferedImage().getWidth() *2, image.getOriginalBufferedImage().getHeight() * i);
-                         image.upsampling(image.getOriginalArray().length * 2, image.getOriginalArray().length * 2);
+                         image.upsampling(image.getOriginalArray().length * 2, image.getOriginalArray()[0].length * 2);
                          if(r1.isSelected()) {
                              image.nearestNeighborUpsampling();
                          }
@@ -756,6 +816,31 @@ public class GUIFrame extends JFrame {
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
                      transformPicLabel.setVisible(true);
                  }
+                 if(e.getSource()==DLBPButton)
+                 {
+                     image.edgeDetection(new DepthLocalBinaryPattern(Integer.parseInt(DLBPMask.getText())));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==IDLBPButton)
+                 {
+                     image.edgeDetection(new ImprovedDepthLocalBinaryPattern(Integer.parseInt(IDLBPMask.getText()), (String) IDBPDropDown.getSelectedItem()));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==sobelButton)
+                 {
+                     image.filter(new Sobel(3));
+                     BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+
              } catch (HeadlessException ex) {
                  throw new RuntimeException(ex);
              }

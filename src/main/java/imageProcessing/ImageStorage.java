@@ -1,12 +1,11 @@
 package imageProcessing;
 
-import imageProcessing.filterProcessing.Filter;
-import imageProcessing.filterProcessing.HighBoostFilter;
-import imageProcessing.filterProcessing.SharpeningFilter;
+import imageProcessing.filterProcessing.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.Buffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -180,6 +179,42 @@ public class ImageStorage {
         this.outlierScale();
         this.pixelOverall();
     }
+    public void runLengthCompression()
+    {
+        RunLengthCompression rle = new RunLengthCompression();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(originalIMG, "jpg", baos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] imageRaster = baos.toByteArray();
+        byte [] encode =rle.runLengthEncoding(imageRaster);
+        byte[] decode = rle.runLengthDecoding(encode);
+        System.out.println(Arrays.equals(imageRaster, decode));
+    }
+    public void huffmanEncoding()
+    {
+        HuffmanCompression huff = new HuffmanCompression();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(originalIMG, "jpg", baos);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] imageRaster = baos.toByteArray();
+        huff.huffmanEncoding(imageRaster);
+    }
+    public void edgeDetection(Filter fil)
+    {
+        FilterMask filter = new FilterMask(fil);
+        setTransformArray(originalArray.length,originalArray[0].length);
+        filter.runFilter(originalArray,transformArray);
+        linearscale();
+        this.pixelOverall();
+    }
+
+
     public void linearscale()
     {
         HashMap<Integer,Double> scaleMap = new HashMap();

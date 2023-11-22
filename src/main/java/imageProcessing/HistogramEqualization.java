@@ -55,7 +55,7 @@ public class HistogramEqualization {
         int[][] temp = padding(original, mask/2);
         for(int i=mask/2,i2=0;i< temp.length-mask/2;i++,i2++)
         {
-            for(int j=mask/2,j2=0;j<temp.length-mask/2;j++,j2++)
+            for(int j=mask/2,j2=0;j<temp[0].length-mask/2;j++,j2++)
             {
                 for(int mi=0,offset=-mask/2; mi< localMask.length;mi++,offset++) {
                     System.arraycopy(temp[i+offset],j-mask/2,localMask[mi],0,localMask.length);
@@ -83,7 +83,7 @@ public class HistogramEqualization {
     }
     public int[][] padding(int[][] original, int pad)
     {
-        int[][] padImage = new int[original.length+(2*pad)][original.length+(2*pad)];
+        int[][] padImage = new int[original.length+(2*pad)][original[0].length+(2*pad)];
         for(int i =0;i< original.length;i++)
         {
             System.arraycopy(original[i],0,padImage[i+pad],pad,original[i].length);
@@ -97,7 +97,7 @@ public class HistogramEqualization {
             for(int j=0;j<pad;j++)
             {
                 padImage[i][j]=padImage[i][pad];
-                padImage[i][padImage.length-pad+j]=padImage[i][padImage.length-pad-1];
+                padImage[i][padImage[0].length-pad+j]=padImage[i][padImage[0].length-pad-1];
             }
         }
         System.out.println(padImage.toString());

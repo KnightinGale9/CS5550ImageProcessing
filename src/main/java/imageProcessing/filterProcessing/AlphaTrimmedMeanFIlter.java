@@ -37,7 +37,7 @@ public class AlphaTrimmedMeanFIlter implements Filter {
         }
         Arrays.sort(mask);
         int sum=0;
-        for(int i=dValue/2;i<mask.length-dValue;i++)
+        for(int i=dValue/2;i<mask.length-dValue/2;i++)
         {
             sum +=mask[i];
         }
