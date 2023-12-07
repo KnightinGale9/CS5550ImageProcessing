@@ -1,6 +1,7 @@
 package imageProcessing;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class RunLengthCompression {
@@ -26,16 +27,16 @@ public class RunLengthCompression {
         encoder.write((byte)matchCount);
         return encoder.toByteArray();
     }
-    public byte[] runLengthDecoding(byte[] imageRaster)
+    public ArrayList<Integer> runLengthDecoding(byte[] imageRaster)
     {
-        ByteArrayOutputStream decoder = new ByteArrayOutputStream();
+        ArrayList<Integer> decoder = new ArrayList<>();
         for(int i=1; i < imageRaster.length; i+=2)
         {
             for(int l=0;l<imageRaster[i];l++){
-                decoder.write(imageRaster[i-1]);
+                decoder.add(Byte.toUnsignedInt(imageRaster[i-1]));
             }
         }
-        return decoder.toByteArray();
+        return decoder;
     }
 
 }

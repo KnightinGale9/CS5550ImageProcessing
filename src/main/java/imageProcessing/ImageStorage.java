@@ -4,17 +4,16 @@ import imageProcessing.filterProcessing.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.io.*;
-import java.nio.Buffer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 public class ImageStorage {
     private File originalImage;
     private BufferedImage originalIMG;
     private int[][] originalArray;
     private int[][] transformArray;
+    private BufferedImage transformIMG;
 
     public void setImageStorage(File path) {
         try {
@@ -59,6 +58,7 @@ public class ImageStorage {
     {
         return originalIMG;
     }
+    public BufferedImage getTransformIMG(){return transformIMG;}
     public void setTransformArray(int height, int width)
     {
         transformArray = new int[height][width];
@@ -98,6 +98,19 @@ public class ImageStorage {
         // Set the pixels of the image
         image.getRaster().setDataElements(0, 0, width, height, pixels);
         return image;
+    }
+    public void getImageFromArray(ArrayList<Integer> pass){
+        int width=originalArray.length;
+        int height=originalArray[0].length;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        // Get the array of integers that represents the image
+        byte[] pixels = new byte[width * height];
+        for (int i = 0; i < pass.size(); i++) {
+            pixels[i]=pass.get(i).byteValue();
+        }
+        // Set the pixels of the image
+        image.getRaster().setDataElements(0, 0, width, height, pixels);
+        transformIMG = image;
     }
     public void changeBitLevel(int oldLevel, int newLevel)
     {
@@ -179,31 +192,110 @@ public class ImageStorage {
         this.outlierScale();
         this.pixelOverall();
     }
-    public void runLengthCompression()
+    public String runLengthCompression()
     {
         RunLengthCompression rle = new RunLengthCompression();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(originalIMG, "jpg", baos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        DataBuffer data = originalIMG.getRaster().getDataBuffer();
+        byte[] imageRaster = new byte[data.getSize()];
+        for(int i=0;i<data.getSize();i++)
+        {
+            imageRaster[i] =  (byte) data.getElem(i);
         }
-        byte[] imageRaster = baos.toByteArray();
+
+        long encodeStart = System.nanoTime();
         byte [] encode =rle.runLengthEncoding(imageRaster);
-        byte[] decode = rle.runLengthDecoding(encode);
-        System.out.println(Arrays.equals(imageRaster, decode));
+        long encodeEnd = System.nanoTime();
+        long encodeDuration = encodeEnd - encodeStart;
+
+        long decodeStart = System.nanoTime();
+        ArrayList<Integer> decode = rle.runLengthDecoding(encode);
+        long decodeEnd = System.nanoTime();
+        long decodeDuration = decodeEnd - decodeStart;
+        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
+        int sum=0;
+        for(int i=0;i< imageRaster.length;i++)
+        {
+            sum+=Math.pow((Byte.toUnsignedInt(imageRaster[i])- decode.get(i)),2);
+        }
+        System.out.println("MSE: " + sum/ imageRaster.length);
+        System.out.println(imageRaster.length + " " + encode.length +"=" + imageRaster.length/encode.length);
+        getImageFromArray(decode);
+        return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encode.length + " / Mean Square Error: " + sum/ imageRaster.length);
+
     }
-    public void huffmanEncoding()
+    public String runLengthBitPlaneCompression()
+    {
+        RunLengthBitPlaneCompression rle = new RunLengthBitPlaneCompression();
+        DataBuffer data = originalIMG.getRaster().getDataBuffer();
+        BitPlane bit = new BitPlane();
+        int[] imageRaster = new int[data.getSize()];
+        for(int i=0;i<data.getSize();i++)
+        {
+            imageRaster[i] =  data.getElem(i);
+        }
+        ArrayList<Integer>[] encode= new ArrayList[8];
+        int encodeLength=0;
+        long encodeStart = System.nanoTime();
+        for(int i =0;i<encode.length;i++){
+            Set<Integer> num = new HashSet<>(Arrays.asList(0,1,2,3,4,5,6,7));
+            num.remove(i);
+            encode[i]=new ArrayList<>();
+            rle.runLengthEncoding(bit.bitPlaneCreation(imageRaster,num),encode[i]);
+            encodeLength+= encode[i].size();
+        }
+        long encodeEnd = System.nanoTime();
+        long encodeDuration = encodeEnd - encodeStart;
+        long decodeStart = System.nanoTime();
+        ArrayList<Integer> decode = rle.runLengthDecoding(encode);
+        long decodeEnd = System.nanoTime();
+        long decodeDuration = decodeEnd - decodeStart;
+        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
+        System.out.println(imageRaster.length +" " +encodeLength);
+        setTransformArray(originalArray.length,originalArray[0].length);
+        int sum=0;
+        for(int i=0;i<imageRaster.length;i++)
+        {
+            sum+=Math.pow(imageRaster[i]- decode.get(i),2);
+        }
+        getImageFromArray(decode);
+        return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encodeLength + " / Mean Square Error: " + sum/ imageRaster.length);
+
+    }
+    public String huffmanEncoding()
     {
         HuffmanCompression huff = new HuffmanCompression();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
-            ImageIO.write(originalIMG, "jpg", baos);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        DataBuffer data = originalIMG.getRaster().getDataBuffer();
+        byte[] imageRaster = new byte[data.getSize()];
+        for(int i=0;i<data.getSize();i++)
+        {
+            imageRaster[i] =  (byte)data.getElem(i);
         }
-        byte[] imageRaster = baos.toByteArray();
-        huff.huffmanEncoding(imageRaster);
+        long encodeStart = System.nanoTime();
+        ArrayList<String> encoded = huff.huffmanEncoding(imageRaster);
+        long encodeEnd = System.nanoTime();
+        long encodeDuration = encodeEnd - encodeStart;
+
+        long decodeStart = System.nanoTime();
+        ArrayList<Integer> decode = huff.decodeHuffman(encoded);
+        long decodeEnd = System.nanoTime();
+        long decodeDuration = decodeEnd - decodeStart;
+//        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
+
+        for(int i=0;i<imageRaster.length;i++)
+        {
+            if(Byte.toUnsignedInt(imageRaster[i])!=(decode.get(i))) {
+                System.out.println(imageRaster[i] + " " + (decode.get(i)) + ":" + (imageRaster[i] == (decode.get(i))));
+//            transformArray[i][j] = decode.get(i * originalArray.length + j);
+//            sum+=Math.pow(originalArray[i][j]- decode.get(i * originalArray.length + j),2);
+            }
+         }
+        int sum=0;
+        for(int i=0;i< imageRaster.length;i++)
+        {
+            sum+=Math.pow((Byte.toUnsignedInt(imageRaster[i])- decode.get(i)),2);
+        }
+        getImageFromArray(decode);
+        return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + 8*decode.size()/(double)huff.huffmanLength() + " / Mean Square Error: " + sum/ imageRaster.length);
     }
     public void edgeDetection(Filter fil)
     {
@@ -228,7 +320,7 @@ public class ImageStorage {
         double interval = 255 / ((double) scaleMap.size()-1);
         Integer[] sorting = scaleMap.keySet().toArray(new Integer[0]);
         Arrays.sort(sorting);
-        System.out.println(Arrays.toString(sorting));
+//        System.out.println(Arrays.toString(sorting));
         for(int i=0;i<scaleMap.size()-1;i++)
         {
             scaleMap.put(sorting[i], i * interval);
@@ -236,13 +328,12 @@ public class ImageStorage {
         }
         scaleMap.put(sorting[sorting.length-1],255.0);
 
-        System.out.println(scaleMap);
-
-        for(int i=0;i<transformArray.length;i++)
-        {
-            for(int j=0;j<transformArray[i].length;j++)
-            {
-                transformArray[i][j] = (int)Math.round(scaleMap.get(transformArray[i][j]));
+//        System.out.println(scaleMap);
+        if(scaleMap.size() !=1) {
+            for (int i = 0; i < transformArray.length; i++) {
+                for (int j = 0; j < transformArray[i].length; j++) {
+                    transformArray[i][j] = (int) Math.round(scaleMap.get(transformArray[i][j]));
+                }
             }
         }
     }

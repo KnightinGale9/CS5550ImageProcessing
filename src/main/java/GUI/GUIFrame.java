@@ -86,6 +86,13 @@ public class GUIFrame extends JFrame {
     private JComboBox<String> IDBPDropDown;
     private JButton IDLBPButton;
 
+    private JButton runLengthGrayButton;
+    private JButton runLengthBitButton;
+    private JButton huffmanButton;
+
+    private JLabel runLengthGrayTXT;
+    private JLabel runLengthBitTXT;
+    private JLabel huffmanTXT;
 
     private JTextField sobelMask;
     private JButton sobelButton;
@@ -293,7 +300,7 @@ public class GUIFrame extends JFrame {
         minMask.setInputVerifier(new OddNumInputVerify());
         minPanel.add(minMask);
         minButton = new JButton("Min Filter");
-        minButton.setPreferredSize(new Dimension(100,50));
+        minButton.setPreferredSize(new Dimension(200,50));
         minButton.addActionListener(act);
         minPanel.add(minButton);
 
@@ -307,7 +314,7 @@ public class GUIFrame extends JFrame {
         maxMask.setInputVerifier(new OddNumInputVerify());
         maxPanel.add(maxMask);
         maxButton = new JButton("Max Filter");
-        maxButton.setPreferredSize(new Dimension(100,50));
+        maxButton.setPreferredSize(new Dimension(200,50));
         maxButton.addActionListener(act);
         maxPanel.add(maxButton);
 
@@ -321,13 +328,12 @@ public class GUIFrame extends JFrame {
         midpointMask.setInputVerifier(new OddNumInputVerify());
         midpointPanel.add(midpointMask);
         midpointButton = new JButton("Midpoint Filter");
-        midpointButton.setPreferredSize(new Dimension(100,50));
+        midpointButton.setPreferredSize(new Dimension(200,50));
         midpointButton.addActionListener(act);
         midpointPanel.add(midpointButton);
 
         JPanel arithmeticMeanPanel = new JPanel();
         JLabel arithmeticMeanLabel = new JLabel("Arithmetic Mean Filters");
-        arithmeticMeanLabel.setPreferredSize(new Dimension(100,50));
         arithmeticMeanPanel.add(arithmeticMeanLabel);
         arithmeticMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         arithmeticMeanMask = new JTextField("3");
@@ -335,13 +341,12 @@ public class GUIFrame extends JFrame {
         arithmeticMeanMask.setInputVerifier(new OddNumInputVerify());
         arithmeticMeanPanel.add(arithmeticMeanMask);
         arithmeticMeanButton = new JButton("Arithmetic Mean Filter");
-        arithmeticMeanButton.setPreferredSize(new Dimension(100,50));
+        arithmeticMeanButton.setPreferredSize(new Dimension(200,50));
         arithmeticMeanButton.addActionListener(act);
         arithmeticMeanPanel.add(arithmeticMeanButton);
 
         JPanel geometricMeanPanel = new JPanel();
         JLabel geometricMeanLabel = new JLabel("Geometric Mean Filters");
-        geometricMeanLabel.setPreferredSize(new Dimension(100,50));
         geometricMeanPanel.add(geometricMeanLabel);
         geometricMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         geometricMeanMask = new JTextField("3");
@@ -349,13 +354,12 @@ public class GUIFrame extends JFrame {
         geometricMeanMask.setInputVerifier(new OddNumInputVerify());
         geometricMeanPanel.add(geometricMeanMask);
         geometricMeanButton = new JButton("Geometric Mean Filter");
-        geometricMeanButton.setPreferredSize(new Dimension(100,50));
+        geometricMeanButton.setPreferredSize(new Dimension(200,50));
         geometricMeanButton.addActionListener(act);
         geometricMeanPanel.add(geometricMeanButton);
 
         JPanel harmonicMeanPanel = new JPanel();
         JLabel harmonicMeanLabel = new JLabel("Harmonic Mean Filters");
-        harmonicMeanLabel.setPreferredSize(new Dimension(100,50));
         harmonicMeanPanel.add(harmonicMeanLabel);
         harmonicMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         harmonicMeanMask = new JTextField("3");
@@ -363,13 +367,12 @@ public class GUIFrame extends JFrame {
         harmonicMeanMask.setInputVerifier(new OddNumInputVerify());
         harmonicMeanPanel.add(harmonicMeanMask);
         harmonicMeanButton = new JButton("Harmonic Mean Filter");
-        harmonicMeanButton.setPreferredSize(new Dimension(100,50));
+        harmonicMeanButton.setPreferredSize(new Dimension(200,50));
         harmonicMeanButton.addActionListener(act);
         harmonicMeanPanel.add(harmonicMeanButton);
 
         JPanel contraharmonicMeanPanel = new JPanel();
         JLabel contraharmonicMeanLabel = new JLabel("Contra Harmonic Mean Filters");
-        contraharmonicMeanLabel.setPreferredSize(new Dimension(100,50));
         contraharmonicMeanPanel.add(contraharmonicMeanLabel);
         contraharmonicMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         contraharmonicMeanMask = new JTextField("3");
@@ -381,13 +384,12 @@ public class GUIFrame extends JFrame {
         contraharmonicQ.setPreferredSize(new Dimension(100,40));
         contraharmonicMeanPanel.add(contraharmonicQ);
         contraharmonicMeanButton = new JButton("Contra Harmonic Mean Filter");
-        contraharmonicMeanButton.setPreferredSize(new Dimension(100,50));
+        contraharmonicMeanButton.setPreferredSize(new Dimension(200,50));
         contraharmonicMeanButton.addActionListener(act);
         contraharmonicMeanPanel.add(contraharmonicMeanButton);
 
         JPanel alphaTrimmedMeanPanel = new JPanel();
         JLabel alphaTrimmedMeanLabel = new JLabel("Alpha Trimmed Mean Filters");
-        alphaTrimmedMeanLabel.setPreferredSize(new Dimension(100,50));
         alphaTrimmedMeanPanel.add(alphaTrimmedMeanLabel);
         alphaTrimmedMeanPanel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         alphaTrimmedMeanMask = new JTextField("3");
@@ -399,7 +401,7 @@ public class GUIFrame extends JFrame {
         alphaTrimmedD.setPreferredSize(new Dimension(100,40));
         alphaTrimmedMeanPanel.add(alphaTrimmedD);
         alphaTrimmedMeanButton = new JButton("Alpha Trimmed Mean Filter");
-        alphaTrimmedMeanButton.setPreferredSize(new Dimension(100,50));
+        alphaTrimmedMeanButton.setPreferredSize(new Dimension(200,50));
         alphaTrimmedMeanButton.addActionListener(act);
         alphaTrimmedMeanPanel.add(alphaTrimmedMeanButton);
 
@@ -441,22 +443,20 @@ public class GUIFrame extends JFrame {
         bitPlane.add(bitPlaneButton);
 
         JPanel sobel = new JPanel();
-        JLabel sobelLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
-        sobelLabel.setPreferredSize(new Dimension(100,50));
+        JLabel sobelLabel = new JLabel("Sobel Edge Detection");
         sobel.add(sobelLabel);
         sobel.add(new JLabel("  MASK(ODD Numbers ONLY): "));
 //        sobelMask = new JTextField("3");
 //        sobelMask.setPreferredSize(new Dimension(100,40));
 //        sobelMask.setInputVerifier(new OddNumInputVerify());
 //        sobel.add(sobelMask);
-        sobelButton = new JButton("DepthLocalBinaryPattern");
+        sobelButton = new JButton("Sobel");
         sobelButton.setPreferredSize(new Dimension(100,50));
         sobelButton.addActionListener(act);
         sobel.add(sobelButton);
 
         JPanel DLBP = new JPanel();
         JLabel DLBPLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
-        DLBPLabel.setPreferredSize(new Dimension(100,50));
         DLBP.add(DLBPLabel);
         DLBP.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         DLBPMask = new JTextField("3");
@@ -464,14 +464,13 @@ public class GUIFrame extends JFrame {
         DLBPMask.setInputVerifier(new OddNumInputVerify());
         DLBP.add(DLBPMask);
         DLBPButton = new JButton("DepthLocalBinaryPattern");
-        DLBPButton.setPreferredSize(new Dimension(100,50));
+        DLBPButton.setPreferredSize(new Dimension(300,50));
         DLBPButton.addActionListener(act);
         DLBP.add(DLBPButton);
 
         JPanel IDLBP = new JPanel();
-        JLabel IDLBPLabel = new JLabel("DepthLocalBinaryPattern Edge Detection");
-        IDLBPLabel.setPreferredSize(new Dimension(100,50));
-        IDLBP.add(DLBPLabel);
+        JLabel IDLBPLabel = new JLabel("ImprovedDepthLocalBinaryPattern Edge Detection");
+        IDLBP.add(IDLBPLabel);
         IDLBP.add(new JLabel("  MASK(ODD Numbers ONLY): "));
         IDLBPMask = new JTextField("3");
         IDLBPMask.setPreferredSize(new Dimension(100,40));
@@ -479,8 +478,8 @@ public class GUIFrame extends JFrame {
         IDLBP.add(IDLBPMask);
         IDBPDropDown = new JComboBox<>(new String[]{"<","=","<="});
         IDLBP.add(IDBPDropDown);
-        IDLBPButton = new JButton("DepthLocalBinaryPattern");
-        IDLBPButton.setPreferredSize(new Dimension(100,50));
+        IDLBPButton = new JButton("ImprovedDepthLocalBinaryPattern");
+        IDLBPButton.setPreferredSize(new Dimension(300,50));
         IDLBPButton.addActionListener(act);
         IDLBP.add(IDLBPButton);
 
@@ -488,6 +487,35 @@ public class GUIFrame extends JFrame {
         edgeDetectionTab.add("Sobel",sobel);
         edgeDetectionTab.add("DepthLocalBinaryPattern",DLBP);
         edgeDetectionTab.add("ImprovedDepthLocalBinaryPattern",IDLBP);
+
+        JPanel runLengthGray = new JPanel();
+        runLengthGrayButton = new JButton("Run Length Coding on GrayScale");
+        runLengthGrayButton.addActionListener(act);
+        runLengthGrayButton.setPreferredSize(new Dimension(300,50));
+        runLengthGrayTXT = new JLabel();
+        runLengthGray.add(runLengthGrayButton);
+        runLengthGray.add(runLengthGrayTXT);
+
+        JPanel runLengthBit = new JPanel();
+        runLengthBitButton = new JButton("Run Length Coding on BitPlane");
+        runLengthBitButton.addActionListener(act);
+        runLengthBitButton.setPreferredSize(new Dimension(300,50));
+        runLengthBitTXT = new JLabel();
+        runLengthBit.add(runLengthBitButton);
+        runLengthBit.add(runLengthBitTXT);
+
+        JPanel HuffmanPanel = new JPanel();
+        huffmanButton = new JButton("Huffman Coding");
+        huffmanButton.addActionListener(act);
+        huffmanButton.setPreferredSize(new Dimension(300,50));
+        huffmanTXT = new JLabel();
+        HuffmanPanel.add(huffmanButton);
+        HuffmanPanel.add(huffmanTXT);
+
+        JTabbedPane compressionTab = new JTabbedPane();
+        compressionTab.add("Run length Coding on GrayScale",runLengthGray);
+        compressionTab.add("Run length Coding on BitPlane",runLengthBit);
+        compressionTab.add("Huffman Coding",HuffmanPanel);
 
 
         tabbedpane = new JTabbedPane();
@@ -499,6 +527,7 @@ public class GUIFrame extends JFrame {
         tabbedpane.add("Image Restoration Filters",imageRestorefilters);
         tabbedpane.add("Bit Plane",bitPlane);
         tabbedpane.add("Edge Detection",edgeDetectionTab);
+        tabbedpane.add("Compression",compressionTab);
         this.add(tabbedpane);
 
 
@@ -836,6 +865,31 @@ public class GUIFrame extends JFrame {
                  {
                      image.filter(new Sobel(3));
                      BufferedImage temp = image.getImageFromArray();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==runLengthGrayButton)
+                 {
+//                     image.runLengthCompression();
+                     runLengthGrayTXT.setText(image.runLengthCompression());
+                     BufferedImage temp = image.getTransformIMG();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==runLengthBitButton)
+                 {
+                     runLengthBitTXT.setText(image.runLengthBitPlaneCompression());
+                     BufferedImage temp = image.getTransformIMG();
+                     transformPicLabel.setIcon(new ImageIcon(temp));
+                     transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
+                     transformPicLabel.setVisible(true);
+                 }
+                 if(e.getSource()==huffmanButton)
+                 {
+                     huffmanTXT.setText(image.huffmanEncoding());
+                     BufferedImage temp = image.getTransformIMG();
                      transformPicLabel.setIcon(new ImageIcon(temp));
                      transformPicLabel.setBounds(0, 0, temp.getWidth(), temp.getHeight());
                      transformPicLabel.setVisible(true);

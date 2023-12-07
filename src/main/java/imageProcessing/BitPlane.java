@@ -29,8 +29,32 @@ public class BitPlane {
                 }
                 transform[i][j] = Integer.parseInt(bitPlane, 2);
 //                System.out.println(":" + bitPlane);
-//                bitPlane="";
+                bitPlane="";
             }
         }
+    }
+    public int[] bitPlaneCreation(int[] original, Set<Integer> bitLevel)
+    {
+        int[] transform = new int[original.length];
+        for(int i=0;i<original.length;i++)
+        {
+            binary = String.format("%8s", Integer.toBinaryString(original[i])).replace(' ', '0');
+//                System.out.print(binary);
+                for(int b=binary.length()-1;b>=0;b--)
+                {
+                    if(bitLevel.contains(b))
+                    {
+                        bitPlane+=0;
+                    }
+                    else
+                    {
+                        bitPlane+=binary.charAt(binary.length()-1-b);
+                    }
+                }
+                transform[i] = Integer.parseInt(bitPlane, 2);
+//                System.out.println(":" + bitPlane);
+                bitPlane="";
+        }
+        return transform;
     }
 }
