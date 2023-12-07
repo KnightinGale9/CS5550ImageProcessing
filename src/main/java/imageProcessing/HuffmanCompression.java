@@ -73,6 +73,10 @@ public class HuffmanCompression {
         }
         return Lavg;
     }
+    public HashMap<Integer,String> getHuffmanStorage()
+    {
+        return huffmanStorage;
+    }
 
     public ArrayList<Integer> decodeHuffman(ArrayList<String> encoded)
     {

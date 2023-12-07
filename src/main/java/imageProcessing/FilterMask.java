@@ -2,8 +2,6 @@ package imageProcessing;
 
 import imageProcessing.filterProcessing.*;
 
-import java.util.Arrays;
-
 public class FilterMask {
     private Filter filter;
     private int mask;

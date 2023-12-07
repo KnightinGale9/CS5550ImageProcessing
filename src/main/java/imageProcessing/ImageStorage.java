@@ -71,10 +71,6 @@ public class ImageStorage {
     {
         return originalArray;
     }
-    public int getOriginalArrayValue(int i,int j)
-    {
-        return originalArray[i][j];
-    }
     public void createTransformImage(String filename)
     {
         try{
@@ -206,7 +202,20 @@ public class ImageStorage {
         byte [] encode =rle.runLengthEncoding(imageRaster);
         long encodeEnd = System.nanoTime();
         long encodeDuration = encodeEnd - encodeStart;
-
+        BufferedImage image = new BufferedImage(encode.length, 1, BufferedImage.TYPE_BYTE_GRAY);
+        // Get the array of integers that represents the image
+        byte[] pixels = new byte[encode.length];
+        for (int i = 0; i < encode.length; i++) {
+            pixels[i]=encode[i];
+        }
+        // Set the pixels of the image
+        image.getRaster().setDataElements(0, 0, encode.length, 1, pixels);
+        File f = new File(String.format("%s.png","RLComprssion"));
+        try {
+            ImageIO.write(image, "png", f);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         long decodeStart = System.nanoTime();
         ArrayList<Integer> decode = rle.runLengthDecoding(encode);
         long decodeEnd = System.nanoTime();
@@ -245,6 +254,26 @@ public class ImageStorage {
         }
         long encodeEnd = System.nanoTime();
         long encodeDuration = encodeEnd - encodeStart;
+
+        BufferedImage image = new BufferedImage(encodeLength, 1, BufferedImage.TYPE_BYTE_GRAY);
+        // Get the array of integers that represents the image
+        byte[] pixels = new byte[encodeLength];
+        int temp =0;
+        for (int i = 0; i < encode.length; i++) {
+            for(int j=0;j< encode[i].size();j++)
+            {
+                pixels[temp++]=encode[i].get(j).byteValue();
+            }
+        }
+        // Set the pixels of the image
+        image.getRaster().setDataElements(0, 0, encodeLength, 1, pixels);
+        File f = new File(String.format("%s.png","RLBComprssion"));
+        try {
+            ImageIO.write(image, "png", f);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         long decodeStart = System.nanoTime();
         ArrayList<Integer> decode = rle.runLengthDecoding(encode);
         long decodeEnd = System.nanoTime();
@@ -275,20 +304,38 @@ public class ImageStorage {
         long encodeEnd = System.nanoTime();
         long encodeDuration = encodeEnd - encodeStart;
 
+        BufferedImage image = new BufferedImage(encoded.size()+huff.getHuffmanStorage().size()+1, 1, BufferedImage.TYPE_BYTE_GRAY);
+        // Get the array of integers that represents the image
+        byte[] pixels = new byte[encoded.size()+huff.getHuffmanStorage().size()+1];
+
+        for(int i=0;i<huff.getHuffmanStorage().size();i++)
+        {
+            for (Integer key: huff.getHuffmanStorage().keySet()) {
+
+                pixels[key]= (byte) Integer.parseInt(huff.getHuffmanStorage().get(key), 2);
+            }
+        }
+        pixels[256]=Byte.MIN_VALUE;
+
+        for (int i = 0; i < encoded.size(); i++) {
+
+            pixels[huff.getHuffmanStorage().size()+i]= (byte) Integer.parseInt(encoded.get(i), 2);
+        }
+        // Set the pixels of the image
+        image.getRaster().setDataElements(0, 0, encoded.size()+huff.getHuffmanStorage().size()+1, 1, pixels);
+        File f = new File(String.format("%s.png","HuffComprssion"));
+        try {
+            ImageIO.write(image, "png", f);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         long decodeStart = System.nanoTime();
         ArrayList<Integer> decode = huff.decodeHuffman(encoded);
         long decodeEnd = System.nanoTime();
         long decodeDuration = decodeEnd - decodeStart;
 //        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
-
-        for(int i=0;i<imageRaster.length;i++)
-        {
-            if(Byte.toUnsignedInt(imageRaster[i])!=(decode.get(i))) {
-                System.out.println(imageRaster[i] + " " + (decode.get(i)) + ":" + (imageRaster[i] == (decode.get(i))));
-//            transformArray[i][j] = decode.get(i * originalArray.length + j);
-//            sum+=Math.pow(originalArray[i][j]- decode.get(i * originalArray.length + j),2);
-            }
-         }
         int sum=0;
         for(int i=0;i< imageRaster.length;i++)
         {
