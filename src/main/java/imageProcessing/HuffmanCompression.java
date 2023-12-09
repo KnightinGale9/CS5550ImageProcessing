@@ -1,23 +1,21 @@
 package imageProcessing;
 
-import java.io.ByteArrayOutputStream;
 import java.util.*;
 
 public class HuffmanCompression {
     HuffmanNode root=null;
     HashMap<Integer,String> huffmanStorage = new HashMap<>();
     HashSet<HuffmanNode> huffmanNodesStroage = new HashSet<>();
-    public ArrayList<String> huffmanEncoding(byte[] imageRaster)
+    public ArrayList<String> huffmanEncoding(int[] imageRaster)
     {
-        ByteArrayOutputStream encoder = new ByteArrayOutputStream();
         HashMap<Integer,Integer> imageDict = new HashMap<>();
         for(int i=0; i < imageRaster.length; i++)
         {
-            if(!imageDict.containsKey(Byte.toUnsignedInt(imageRaster[i])))
+            if(!imageDict.containsKey((imageRaster[i])))
             {
-                imageDict.put(Byte.toUnsignedInt(imageRaster[i]),1 );
+                imageDict.put((imageRaster[i]),1 );
             }
-            imageDict.put((Byte.toUnsignedInt(imageRaster[i])),imageDict.get(Byte.toUnsignedInt(imageRaster[i]))+1 );
+            imageDict.put(((imageRaster[i])),imageDict.get((imageRaster[i]))+1 );
         }
 //        System.out.println(imageDict);
         PriorityQueue<HuffmanNode> minHeap = new PriorityQueue<>(imageDict.size(),new HuffmanMinComparator());
@@ -55,12 +53,12 @@ public class HuffmanCompression {
         // print the codes by traversing the tree
 //        printCode(root, "");
     }
-    public ArrayList<String> huffmanCode(byte[] imageRaster)
+    public ArrayList<String> huffmanCode(int[] imageRaster)
     {
         ArrayList<String> storage = new ArrayList<>();
         for(int i=0;i<imageRaster.length;i++)
         {
-            storage.add(huffmanStorage.get(Byte.toUnsignedInt(imageRaster[i])));
+            storage.add(huffmanStorage.get((imageRaster[i])));
         }
         return storage;
     }

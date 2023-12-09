@@ -192,24 +192,24 @@ public class ImageStorage {
     {
         RunLengthCompression rle = new RunLengthCompression();
         DataBuffer data = originalIMG.getRaster().getDataBuffer();
-        byte[] imageRaster = new byte[data.getSize()];
+        int[] imageRaster = new int[data.getSize()];
         for(int i=0;i<data.getSize();i++)
         {
-            imageRaster[i] =  (byte) data.getElem(i);
+            imageRaster[i] = data.getElem(i);
         }
 
         long encodeStart = System.nanoTime();
-        byte [] encode =rle.runLengthEncoding(imageRaster);
+        ArrayList<Integer> encode =rle.runLengthEncoding(imageRaster);
         long encodeEnd = System.nanoTime();
         long encodeDuration = encodeEnd - encodeStart;
-        BufferedImage image = new BufferedImage(encode.length, 1, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage image = new BufferedImage(encode.size(), 1, BufferedImage.TYPE_BYTE_GRAY);
         // Get the array of integers that represents the image
-        byte[] pixels = new byte[encode.length];
-        for (int i = 0; i < encode.length; i++) {
-            pixels[i]=encode[i];
+        byte[] pixels = new byte[encode.size()];
+        for (int i = 0; i < encode.size(); i++) {
+            pixels[i]= encode.get(i).byteValue();
         }
         // Set the pixels of the image
-        image.getRaster().setDataElements(0, 0, encode.length, 1, pixels);
+        image.getRaster().setDataElements(0, 0, encode.size(), 1, pixels);
         File f = new File(String.format("%s.png","RLComprssion"));
         try {
             ImageIO.write(image, "png", f);
@@ -224,12 +224,14 @@ public class ImageStorage {
         int sum=0;
         for(int i=0;i< imageRaster.length;i++)
         {
-            sum+=Math.pow((Byte.toUnsignedInt(imageRaster[i])- decode.get(i)),2);
+            sum+=Math.pow((imageRaster[i]- decode.get(i)),2);
         }
         System.out.println("MSE: " + sum/ imageRaster.length);
-        System.out.println(imageRaster.length + " " + encode.length +"=" + imageRaster.length/encode.length);
+        System.out.println(imageRaster.length + " " + encode.size() +"=" + imageRaster.length/encode.size());
         getImageFromArray(decode);
-        return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encode.length + " / Mean Square Error: " + sum/ imageRaster.length);
+        System.out.println("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encode.size() + " / Mean Square Error: " + sum/ imageRaster.length);
+
+        return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encode.size() + " / Mean Square Error: " + sum/ imageRaster.length);
 
     }
     public String runLengthBitPlaneCompression()
@@ -278,8 +280,8 @@ public class ImageStorage {
         ArrayList<Integer> decode = rle.runLengthDecoding(encode);
         long decodeEnd = System.nanoTime();
         long decodeDuration = decodeEnd - decodeStart;
-        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
-        System.out.println(imageRaster.length +" " +encodeLength);
+//        System.out.println("Encode Time: " + encodeDuration + "  Decode Time: " + decodeDuration);
+//        System.out.println(imageRaster.length +" " +encodeLength);
         setTransformArray(originalArray.length,originalArray[0].length);
         int sum=0;
         for(int i=0;i<imageRaster.length;i++)
@@ -287,6 +289,7 @@ public class ImageStorage {
             sum+=Math.pow(imageRaster[i]- decode.get(i),2);
         }
         getImageFromArray(decode);
+        System.out.println("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encodeLength + " / Mean Square Error: " + sum/ imageRaster.length);
         return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + decode.size()/(double)encodeLength + " / Mean Square Error: " + sum/ imageRaster.length);
 
     }
@@ -294,10 +297,10 @@ public class ImageStorage {
     {
         HuffmanCompression huff = new HuffmanCompression();
         DataBuffer data = originalIMG.getRaster().getDataBuffer();
-        byte[] imageRaster = new byte[data.getSize()];
+        int[] imageRaster = new int[data.getSize()];
         for(int i=0;i<data.getSize();i++)
         {
-            imageRaster[i] =  (byte)data.getElem(i);
+            imageRaster[i] =  data.getElem(i);
         }
         long encodeStart = System.nanoTime();
         ArrayList<String> encoded = huff.huffmanEncoding(imageRaster);
@@ -339,9 +342,11 @@ public class ImageStorage {
         int sum=0;
         for(int i=0;i< imageRaster.length;i++)
         {
-            sum+=Math.pow((Byte.toUnsignedInt(imageRaster[i])- decode.get(i)),2);
+            sum+=Math.pow(((imageRaster[i])- decode.get(i)),2);
         }
         getImageFromArray(decode);
+        System.out.println("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + 8*decode.size()/(double)huff.huffmanLength() + " / Mean Square Error: " + sum/ imageRaster.length);
+
         return ("Encode Time: " + encodeDuration + " NanoSeconds / Decode Time: " + decodeDuration + " NanoSeconds / Compression Ratio: " + 8*decode.size()/(double)huff.huffmanLength() + " / Mean Square Error: " + sum/ imageRaster.length);
     }
     public void edgeDetection(Filter fil)

@@ -32,7 +32,7 @@ public class GrayPixelReader {
         {
             try {
                 convertImageToArrayPGM(imgArray);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 convertImagetoArrayRGB(img,imgArray);
                 System.out.println(" png");
             }
